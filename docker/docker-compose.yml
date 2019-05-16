@@ -1,0 +1,46 @@
+# docker-compose -f docker-compose.yml up
+# Depends on .env file in the docker directory
+
+version: '3.7'
+
+services:
+  etcd1:
+    image: nexcpu/etcd:latest
+    container_name: etcd1
+    ports:
+      - ${ETCD1_CLIENT_PORT}:${ETCD1_CLIENT_PORT}
+      - ${ETCD1_PEER_PORT}:${ETCD1_PEER_PORT} 
+    entrypoint: bash -c "/opt/etcd/etcd --name etcd1 --initial-advertise-peer-urls http://${HOST_IP}:${ETCD1_PEER_PORT} 
+            --listen-peer-urls http://${HOST_IP}:${ETCD1_PEER_PORT} --advertise-client-urls http://${HOST_IP}:${ETCD1_CLIENT_PORT}  
+            --listen-client-urls http://${HOST_IP}:${ETCD1_CLIENT_PORT}  --initial-cluster-state new 
+            --initial-cluster etcd1=http://${HOST_IP}:${ETCD1_PEER_PORT},etcd2=http://${HOST_IP}:${ETCD2_PEER_PORT}
+            --initial-cluster-token ${CLUSTER_TOKEN}" 
+            
+  etcd2:
+      image: nexcpu/etcd:latest
+      container_name: etcd2
+      ports:
+        - ${ETCD2_CLIENT_PORT}:${ETCD2_CLIENT_PORT}
+        - ${ETCD2_PEER_PORT}:${ETCD2_PEER_PORT} 
+      entrypoint: bash -c "/opt/etcd/etcd --name etcd2 --initial-advertise-peer-urls http://${HOST_IP}:${ETCD2_PEER_PORT} 
+              --listen-peer-urls http://${HOST_IP}:${ETCD2_PEER_PORT} --advertise-client-urls http://${HOST_IP}:${ETCD2_CLIENT_PORT}  
+              --listen-client-urls http://${HOST_IP}:${ETCD2_CLIENT_PORT}  --initial-cluster-state new 
+              --initial-cluster etcd1=http://${HOST_IP}:${ETCD1_PEER_PORT},etcd2=http://${HOST_IP}:${ETCD2_PEER_PORT}
+              --initial-cluster-token ${CLUSTER_TOKEN}"
+      depends_on:
+        - etcd1
+           
+  etcd3:
+      image: nexcpu/etcd:latest
+      container_name: etcd3
+      ports:
+        - ${ETCD3_CLIENT_PORT}:${ETCD3_CLIENT_PORT}
+        - ${ETCD3_PEER_PORT}:${ETCD3_PEER_PORT} 
+      entrypoint: bash -c "/opt/etcd/etcd --name etcd3 --initial-advertise-peer-urls http://${HOST_IP}:${ETCD3_PEER_PORT} 
+              --listen-peer-urls http://${HOST_IP}:${ETCD3_PEER_PORT} --advertise-client-urls http://${HOST_IP}:${ETCD3_CLIENT_PORT}  
+              --listen-client-urls http://${HOST_IP}:${ETCD3_CLIENT_PORT}  --initial-cluster-state new 
+              --initial-cluster etcd1=http://${HOST_IP}:${ETCD1_PEER_PORT},etcd2=http://${HOST_IP}:${ETCD2_PEER_PORT},etcd3=http://${HOST_IP}:${ETCD3_PEER_PORT}
+              --initial-cluster-token ${CLUSTER_TOKEN}"
+      depends_on:
+        - etcd1
+        - etcd2
