@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {},
+	"launch": {
+		"version": "0.2.0",
+
+		"configurations": [
+
+			{
+				"name": "simple-etcd",
+				"type": "go",
+				"request": "launch",
+				"mode": "debug",
+				"program": "${workspaceFolder}/main.go",
+				"cwd": "${workspaceFolder}",
+				"env": {},
+				"args": ["-frank=1"]
+			}
+		]
+	}	
+}
