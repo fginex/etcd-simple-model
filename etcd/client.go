@@ -283,7 +283,7 @@ func (cc *ConfigClient) ReadEntry(entryKey string, defaultVal string) (string, e
 		return defaultVal, errors.New("all connections have been closed via Close()")
 	}
 
-	rsp, err := cc.etcd.Get(context.Background(), cc.expandKey(entryKey), clientv3.WithPrefix())
+	rsp, err := cc.etcd.Get(context.Background(), cc.expandKey(entryKey))
 	if err != nil {
 		return defaultVal, err
 	}
